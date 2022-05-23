@@ -1,10 +1,12 @@
 use reqwest::{self, Client};
 use crate::models::{self};
 use std::{error::Error};
+use serde_json::json;
+
 
 const URL: &str = "http://localhost:8000/";
 
-pub async fn get_item(client: Client, item_num: u64) -> Result<models::Item, Box<dyn Error>> 
+pub async fn get_item(client: &Client, item_num: u64) -> Result<models::Item, Box<dyn Error>> 
 {
     let request_url = format!("{}items/{}", URL, item_num);
     let response = client.get(request_url).send().await?;
@@ -12,7 +14,7 @@ pub async fn get_item(client: Client, item_num: u64) -> Result<models::Item, Box
     Ok(item)
 }
 
-pub async fn get_items(client: Client) -> Result<Vec<models::Item>, Box<dyn Error>> 
+pub async fn get_items(client: &Client) -> Result<Vec<models::Item>, Box<dyn Error>> 
 {
     let request_url = format!("{}items/", URL);
     let response = client.get(request_url).send().await?;
@@ -20,7 +22,7 @@ pub async fn get_items(client: Client) -> Result<Vec<models::Item>, Box<dyn Erro
     Ok(items)
 }
 
-pub async fn get_active_sessions(client: Client) -> Result<Vec<models::TableSession>, Box<dyn Error>> 
+pub async fn get_active_sessions(client: &Client) -> Result<Vec<models::TableSession>, Box<dyn Error>> 
 {
     let request_url = format!("{}tables/", URL);
     let response = client.get(request_url).send().await?;
@@ -28,7 +30,7 @@ pub async fn get_active_sessions(client: Client) -> Result<Vec<models::TableSess
     Ok(active_sessions)
 }
 
-pub async fn get_sessions(client: Client, table_nr: u8) -> Result<Vec<models::TableSession>, Box<dyn Error>>
+pub async fn get_sessions(client: &Client, table_nr: u8) -> Result<Vec<models::TableSession>, Box<dyn Error>>
 {
     let request_url = format!("{}tables/{}", URL, table_nr);
     let response = client.get(request_url).send().await?;
@@ -36,7 +38,7 @@ pub async fn get_sessions(client: Client, table_nr: u8) -> Result<Vec<models::Ta
     Ok(sessions)
 }
 
-pub async fn get_active_session(client: Client, table_nr: u8) -> Result<models::TableSession, Box<dyn Error>>
+pub async fn get_active_session(client: &Client, table_nr: u8) -> Result<models::TableSession, Box<dyn Error>>
 {
     let request_url = format!("{}tables/{}/active", URL, table_nr);
     let response = client.get(request_url).send().await?;
@@ -44,7 +46,7 @@ pub async fn get_active_session(client: Client, table_nr: u8) -> Result<models::
     Ok(sessions)
 }//
 
-pub async fn get_order(client: Client, table_nr: u8 ,order_id: i64) -> Result<models::Order, Box<dyn Error>>
+pub async fn get_order(client: &Client, table_nr: u8 ,order_id: i64) -> Result<models::Order, Box<dyn Error>>
 {
     let request_url = format!("{}tables/{}/orders/{})", URL, table_nr, order_id);
     let response = client.get(request_url).send().await?;
@@ -52,7 +54,7 @@ pub async fn get_order(client: Client, table_nr: u8 ,order_id: i64) -> Result<mo
     Ok(order)
 }
 
-pub async fn get_orders(client: Client, table_nr: u8) -> Result<Vec<models::Order>, Box<dyn Error>>
+pub async fn get_orders(client: &Client, table_nr: u8) -> Result<Vec<models::Order>, Box<dyn Error>>
 {
     let request_url = format!("{}tables/{}/orders)", URL, table_nr);
     let response = client.get(request_url).send().await?;
@@ -62,15 +64,16 @@ pub async fn get_orders(client: Client, table_nr: u8) -> Result<Vec<models::Orde
 
 
 //Post
-pub async fn add_session(client: Client, table_nr: u8, session: models::TableSession) -> Result<models::TableSession, Box<dyn Error>>
+pub async fn add_session(client: &Client, table_nr: u8, session: models::TableSessionOut) -> Result<models::TableSessionOut, Box<dyn Error>>
 {
-    let request_url = format!("{}tables/{})", URL, table_nr);
-    let response = client.post(request_url).body(serde_json::to_string(&session).unwrap()).send().await?;
-    let added_session: models::TableSession = response.json().await?;
+    let request_url = format!("{}tables/{}", URL, table_nr);
+    let response = client.post(request_url).json(&session).send().await?;
+    println!("{:?}", response);
+    let added_session: models::TableSessionOut = response.json().await?;
     Ok(added_session)
 }
 
-pub async fn add_order(client: Client, table_nr: u8, order: models::Order) -> Result<models::Order, Box<dyn Error>> 
+pub async fn add_order(client: &Client, table_nr: u8, order: models::Order) -> Result<models::Order, Box<dyn Error>> 
 {
     let request_url = format!("{}tables/{}/orders)", URL, table_nr);
     let response = client.post(request_url).body(serde_json::to_string(&order).unwrap()).send().await?;
@@ -79,7 +82,7 @@ pub async fn add_order(client: Client, table_nr: u8, order: models::Order) -> Re
 }
 
 //Delete
-pub async fn remove_order(client: Client, table_nr: u8, order_id: i64) -> Result<String, Box<dyn Error>>
+pub async fn remove_order(client: &Client, table_nr: u8, order_id: i64) -> Result<String, Box<dyn Error>>
 {
     let request_url = format!("{}tables/{}/orders/{})", URL, table_nr, order_id);
     let response = client.delete(request_url).send().await?;
@@ -87,7 +90,7 @@ pub async fn remove_order(client: Client, table_nr: u8, order_id: i64) -> Result
     Ok(removed)
 }
 
-pub async fn end_session(client: Client, table_nr: u8) -> Result<String, Box<dyn Error>>
+pub async fn end_session(client: &Client, table_nr: u8) -> Result<String, Box<dyn Error>>
 {
     let request_url = format!("{}tables/{})", URL, table_nr);
     let response = client.delete(request_url).send().await?;
@@ -95,7 +98,7 @@ pub async fn end_session(client: Client, table_nr: u8) -> Result<String, Box<dyn
     Ok(removed)
 }
 
-pub async fn remove_item(client: Client, table_nr: u8, order_id: i64, item_id: i64) -> Result<String, Box<dyn Error>>
+pub async fn remove_item(client: &Client, table_nr: u8, order_id: i64, item_id: i64) -> Result<String, Box<dyn Error>>
 {
     let request_url = format!("{}tables/{}/orders/{}/{})", URL, table_nr, order_id, item_id);
     let response = client.delete(request_url).send().await?;
