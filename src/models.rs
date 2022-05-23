@@ -17,6 +17,11 @@ pub struct Order {
     pub order_items: Vec<OrderItem>
 }
 #[derive(Deserialize, Serialize, Debug)]
+pub struct OrderOut {
+    pub order_items: Vec<OrderItem>
+}
+
+#[derive(Deserialize, Serialize, Debug)]
 pub struct OrderItem {
     pub item_id: i64,
     pub amount: u8

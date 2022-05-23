@@ -1,8 +1,8 @@
 use reqwest::{self, Client};
 use crate::models::{self};
 use std::{error::Error};
-use serde_json::json;
-
+use reqwest::blocking;
+use futures::executor::block_on;
 
 const URL: &str = "http://localhost:8000/";
 
@@ -48,7 +48,7 @@ pub async fn get_active_session(client: &Client, table_nr: u8) -> Result<models:
 
 pub async fn get_order(client: &Client, table_nr: u8 ,order_id: i64) -> Result<models::Order, Box<dyn Error>>
 {
-    let request_url = format!("{}tables/{}/orders/{})", URL, table_nr, order_id);
+    let request_url = format!("{}tables/{}/orders/{}", URL, table_nr, order_id);
     let response = client.get(request_url).send().await?;
     let order: models::Order = response.json().await?;
     Ok(order)
@@ -56,7 +56,7 @@ pub async fn get_order(client: &Client, table_nr: u8 ,order_id: i64) -> Result<m
 
 pub async fn get_orders(client: &Client, table_nr: u8) -> Result<Vec<models::Order>, Box<dyn Error>>
 {
-    let request_url = format!("{}tables/{}/orders)", URL, table_nr);
+    let request_url = format!("{}tables/{}/orders", URL, table_nr);
     let response = client.get(request_url).send().await?;
     let orders: Vec<models::Order> = response.json().await?;
     Ok(orders)
@@ -68,23 +68,22 @@ pub async fn add_session(client: &Client, table_nr: u8, session: models::TableSe
 {
     let request_url = format!("{}tables/{}", URL, table_nr);
     let response = client.post(request_url).json(&session).send().await?;
-    println!("{:?}", response);
     let added_session: models::TableSessionOut = response.json().await?;
     Ok(added_session)
 }
 
-pub async fn add_order(client: &Client, table_nr: u8, order: models::Order) -> Result<models::Order, Box<dyn Error>> 
+pub async fn add_order(client: &Client, table_nr: u8, order: models::OrderOut) -> Result<models::OrderOut, Box<dyn Error>> 
 {
-    let request_url = format!("{}tables/{}/orders)", URL, table_nr);
-    let response = client.post(request_url).body(serde_json::to_string(&order).unwrap()).send().await?;
-    let add_order: models::Order = response.json().await?;
+    let request_url = format!("{}tables/{}/orders", URL, table_nr);
+    let response = client.post(request_url).json(&order).send().await?;
+    let add_order: models::OrderOut = response.json().await?;
     Ok(add_order)
 }
 
 //Delete
 pub async fn remove_order(client: &Client, table_nr: u8, order_id: i64) -> Result<String, Box<dyn Error>>
 {
-    let request_url = format!("{}tables/{}/orders/{})", URL, table_nr, order_id);
+    let request_url = format!("{}tables/{}/orders/{}", URL, table_nr, order_id);
     let response = client.delete(request_url).send().await?;
     let removed: String = response.json().await?;
     Ok(removed)
@@ -92,7 +91,7 @@ pub async fn remove_order(client: &Client, table_nr: u8, order_id: i64) -> Resul
 
 pub async fn end_session(client: &Client, table_nr: u8) -> Result<String, Box<dyn Error>>
 {
-    let request_url = format!("{}tables/{})", URL, table_nr);
+    let request_url = format!("{}tables/{}", URL, table_nr);
     let response = client.delete(request_url).send().await?;
     let removed: String = response.json().await?;
     Ok(removed)
@@ -100,8 +99,9 @@ pub async fn end_session(client: &Client, table_nr: u8) -> Result<String, Box<dy
 
 pub async fn remove_item(client: &Client, table_nr: u8, order_id: i64, item_id: i64) -> Result<String, Box<dyn Error>>
 {
-    let request_url = format!("{}tables/{}/orders/{}/{})", URL, table_nr, order_id, item_id);
+    let request_url = format!("{}tables/{}/orders/{}/{}", URL, table_nr, order_id, item_id);
     let response = client.delete(request_url).send().await?;
+    println!("Response {:?}", response);
     let removed: String = response.json().await?;
     Ok(removed)
 }
