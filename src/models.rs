@@ -45,9 +45,3 @@ pub struct TableSessionOut {
     pub session_start: String,
     pub active: bool
 }
-
-impl TableSessionOut {
-    pub fn new() -> Self {
-        TableSessionOut { customers: (0), session_start: ("".to_string()), active: (false) }
-    }
-}
