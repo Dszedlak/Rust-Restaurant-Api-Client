@@ -42,7 +42,7 @@ pub fn get_active_session(client: &Client, table_nr: u8) -> Result<models::Table
     let response = client.get(request_url).send();
     let sessions: models::TableSession = response?.json()?;
     Ok(sessions)
-}//
+}
 
 pub fn get_order(client: &Client, table_nr: u8 ,order_id: i64) -> Result<models::Order, Box<dyn Error>>
 {
@@ -59,7 +59,6 @@ pub fn get_orders(client: &Client, table_nr: u8) -> Result<Vec<models::Order>, B
     let orders: Vec<models::Order> = response?.json()?;
     Ok(orders)
 }
-
 
 //Post
 pub fn add_session(client: &Client, table_nr: u8, session: models::TableSessionOut) -> Result<models::TableSessionOut, Box<dyn Error>>
