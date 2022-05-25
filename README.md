@@ -4,7 +4,7 @@ Client for the Restaurant backend API written in rust.
 
 ***Please insure you have the latest version of Rust installed***
 
-Libraries used: 
+#### Libraries used: 
 
 **[Reqwest](https://docs.rs/reqwest/latest/reqwest/)**
 
