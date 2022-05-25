@@ -24,7 +24,8 @@ Libraries used:
 4. To run the client, simple type 'cargo run'. This will build the client, install any dependencies and run a simulated example of api calls to the server in 10 seperate threads.
 
 ### On start-up
-Output for the simulated api-calls will be displayed in the terminal. An example of expected output is below. Please note, that there should be no errors, and all 'Remove' calls should return 'success': 
+
+**Output for the simulated api-calls will be displayed in the terminal. An example of expected output is below. Please note, that there should be no errors, and all 'Remove' calls should return 'success': **
 
 (Get active sessions) Active Tables[]
 
