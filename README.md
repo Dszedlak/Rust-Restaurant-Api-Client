@@ -25,7 +25,7 @@ Libraries used:
 
 ### On start-up
 
-**Output for the simulated api-calls will be displayed in the terminal. An example of expected output is below. Please note, that there should be no errors, and all 'Remove' calls should return 'success': **
+**Output for the simulated api-calls will be displayed in the terminal. An example of expected output is below. Please note, that there should be no errors, and all 'Remove' calls should return 'success':**
 
 (Get active sessions) Active Tables[]
 
